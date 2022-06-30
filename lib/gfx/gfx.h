@@ -45,7 +45,4 @@ void setUniformMat4f(uint32_t shader, const char *name,
                      mat4 *projection_matrix);
 void setUniform1i(uint32_t shader, const char *name, int32_t value);
 
-// Textures
-uint32_t create_texture(const char *name);
-
 #endif

@@ -36,14 +36,12 @@ add_subdirectory(${LIB_DIR}/io)
 add_subdirectory(${LIB_DIR}/gui)
 add_subdirectory(${LIB_DIR}/window)
 add_subdirectory(${LIB_DIR}/gfx)
-add_subdirectory(${LIB_DIR}/image)
 
 # --------------------
 # LINKING ALL THE LIBS
 # --------------------
 add_executable(${PROJECT_NAME} src/main.c ${imgui_backends})
 target_link_libraries(${PROJECT_NAME}
-  image
   OpenGL::GL
   glad
   glfw
