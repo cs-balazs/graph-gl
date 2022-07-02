@@ -10,6 +10,8 @@
 #include "gfx.h"
 #include "parse_tree.h"
 
+#define AUTO_EXPORT_MERMAID
+
 int main(void)
 {
   GLFWwindow *window = get_window();
@@ -75,8 +77,9 @@ int main(void)
       Formula formula_copy;
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
+#ifdef AUTO_EXPORT_MERMAID
       mermaid_export(tree);
-      printf("Tree constructed!!!!!\n");
+#endif
     }
     igEnd();
 
