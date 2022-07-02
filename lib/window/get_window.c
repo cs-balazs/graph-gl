@@ -36,5 +36,7 @@ GLFWwindow *get_window()
 
   gui_init(window);
 
+  glfwSetWindowSize(window, 500, 500);
+
   return window;
 }

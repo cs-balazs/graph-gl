@@ -24,7 +24,7 @@ void update_positions(float stride, uint16_t num_of_positions, float *positions,
     x += stride;
   }
   uint16_t index = 0;
-  for (size_t i = 0; i < num_of_positions * 2 - 2; i += 2) {
+  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
     indicies[i] = index;
     indicies[i + 1] = index + 1;
     index++;
