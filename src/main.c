@@ -14,21 +14,34 @@
 
 // TODO some code could be simplified with structs
 
+double scale_value = 1;
+
 void update_positions(float stride, uint16_t num_of_positions, float *positions,
                       uint32_t *indicies, ParseTree *tree, double translate_x)
 {
   int16_t x = -250 - translate_x;
   for (size_t i = 0; i < num_of_positions * 2; i += 2) {
-    positions[i] = x;
+    positions[i] = (double)x * scale_value;
     positions[i + 1] = tree == NULL ? 1 : compute(tree, x);
     x += stride;
   }
   uint16_t index = 0;
-  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
+  for (size_t i = 0; i < num_of_positions * 2 - 2; i += 2) {
     indicies[i] = index;
     indicies[i + 1] = index + 1;
     index++;
   }
+}
+
+void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
+{
+  // printf("(%lf, %lf)\n", x_offset, y_offset);
+  if (y_offset > 0) {
+    scale_value += 0.1f;
+  } else {
+    scale_value -= 0.1f;
+  }
+  scale_value = 1 > scale_value ? 1 : scale_value;
 }
 
 int main(void)
@@ -64,6 +77,8 @@ int main(void)
   mat4 model = GLM_MAT4_IDENTITY_INIT;
   glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
 
+  glm_scale(model, (vec3){ scale_value, scale_value, scale_value });
+
   glm_mat4_mul(proj, model, mvp);
 
   uint32_t shader = create_shader("line");
@@ -80,6 +95,8 @@ int main(void)
 
   double x = 0;
   double y = 0;
+
+  glfwSetScrollCallback(window, scroll_callback);
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -100,6 +117,7 @@ int main(void)
 
     mat4 model = GLM_MAT4_IDENTITY_INIT;
     glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
+    glm_scale(model, (vec3){ scale_value, scale_value, scale_value });
     glm_mat4_mul(proj, model, mvp);
 
     igBegin("Settings", NULL, ImGuiWindowFlags_None);
