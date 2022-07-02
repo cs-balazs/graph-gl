@@ -2,13 +2,9 @@
 #include <cimgui.h>
 #include "gui.h"
 
-void gui_update(float colors[4])
+void gui_update()
 {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   igNewFrame();
-
-  igBegin("Settings", NULL, ImGuiWindowFlags_None);
-  igColorEdit4("Color", colors, ImGuiSliderFlags_None);
-  igEnd();
 }

@@ -6,6 +6,8 @@
     "*.env.local.development": "env",
     "*.env.local": "env",
     "*.h": "c",
-    "glm.hpp": "c"
+    "glm.hpp": "c",
+    "cstdint": "c",
+    "random": "c"
   }
 }

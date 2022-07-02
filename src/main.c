@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include <cglm/cglm.h>
 #include "window.h"
 #include "gui.h"
 #include "gfx.h"
+#include "parse_tree.h"
 
 int main(void)
 {
@@ -33,16 +35,15 @@ int main(void)
   };
   // clang-format on
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   uint32_t vertex_array = create_vertex_array();
+
   uint32_t vertex_buffer =
     create_vertex_buffer(positions, 2 * 4 * sizeof(float));
+
   BufferLayout layout = { stride: 0, length: 0 };
   BufferLayoutElement positions_element = { GL_FLOAT, 2, GL_FALSE };
-
   buffer_layout_add_element(&layout, &positions_element);
+
   vertex_array_add_buffer(vertex_array, vertex_buffer, &layout);
 
   uint32_t index_buffer = create_index_buffer(indicies, 8);
@@ -53,33 +54,34 @@ int main(void)
   uint32_t shader = create_shader("line");
   glUseProgram(shader);
 
-  float colors[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-  setUniform4f(shader, "u_Color", colors[0], colors[1], colors[2], colors[3]);
-
-  glBindVertexArray(0);
-  glUseProgram(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  Formula formula = { 0 };
+  ParseTree *tree = malloc(sizeof(ParseTree));
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    gui_update(colors);
+    gui_update();
+
+    igBegin("Settings", NULL, ImGuiWindowFlags_None);
+    igInputText("Formula", formula, FORMULA_MAX_LENGTH, ImGuiWindowFlags_None,
+                NULL, NULL);
 
     setUniformMat4f(shader, "u_MVP", &proj);
-
     glUseProgram(shader);
-    setUniform4f(shader, "u_Color", colors[0], colors[1], colors[2], colors[3]);
-
     glBindVertexArray(vertex_array);
-
     glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, NULL);
 
+    if (igButton("Render", (ImVec2){ 100, 25 })) {
+      Formula formula_copy;
+      strcpy(formula_copy, formula);
+      tree = parse_formula(formula_copy);
+      mermaid_export(tree);
+      printf("Tree constructed!!!!!\n");
+    }
+    igEnd();
+
     gui_render();
-
     glfwSwapBuffers(window);
-
     glfwPollEvents();
   }
 
