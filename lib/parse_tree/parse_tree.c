@@ -6,22 +6,6 @@
 #include <math.h>
 #include "io.h"
 
-/**
- * TODOS:
- *   + Remove brackets from formula after calculating the weights (also shift the weights char[])
- *   + Drag to move in space
- *   ~ Scroll to scale (buggy)
- *   - Reset frame to origin
- *   - Draw a grid (with numbers?)
- *   - Support spaces (remove them like brackets)
- *   - Support "2x" instead of 2*x (also similar transformation to removal)
- *   - free stuff allocated on heap
- *   - Support negative numbers, currentls '-' is being interpreted as minus operator, so (0 - 3) is -3 now
- *   - Support some unary operators like: sin() cos(), log(), ! (factorial)
- *       - Shouldn't be too hard, either left or right will be NULL
- *   + Mermaid export of the tree
- */
-
 ParseTree *construct_tree_from_formula(Formula formula, Formula weights,
                                        uint8_t start, uint8_t end,
                                        uint8_t formula_length,
