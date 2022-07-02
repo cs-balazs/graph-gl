@@ -9,8 +9,8 @@
 /**
  * TODOS:
  *   + Remove brackets from formula after calculating the weights (also shift the weights char[])
- *   - Drag to move in space
- *   - Scroll to scale
+ *   + Drag to move in space
+ *   ~ Scroll to scale (buggy)
  *   - Reset frame to origin
  *   - Draw a grid (with numbers?)
  *   - Support spaces (remove them like brackets)
