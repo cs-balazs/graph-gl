@@ -12,10 +12,12 @@
 
 #define AUTO_EXPORT_MERMAID
 
+// TODO some code could be simplified with structs
+
 void update_positions(float stride, uint16_t num_of_positions, float *positions,
-                      uint32_t *indicies, ParseTree *tree)
+                      uint32_t *indicies, ParseTree *tree, double translate_x)
 {
-  int16_t x = -250;
+  int16_t x = -250 - translate_x;
   for (size_t i = 0; i < num_of_positions * 2; i += 2) {
     positions[i] = x;
     positions[i + 1] = tree == NULL ? 1 : compute(tree, x);
@@ -43,32 +45,68 @@ int main(void)
   float positions[num_of_positions * 2];
   uint32_t indicies[num_of_positions * 2];
 
-  update_positions(stride, num_of_positions, positions, indicies, NULL);
+  double mouse_x = 0;
+  double mouse_y = 0;
+  double translate_x = 0;
+  double translate_y = 0;
+  uint8_t is_mouse_button_pressed = 0;
+
+  update_positions(stride, num_of_positions, positions, indicies, NULL,
+                   translate_x);
 
   uint32_t vertex_array = create_vertex_array();
 
+  mat4 mvp;
+
   mat4 proj;
   glm_ortho(-250.0f, 250.0f, -250.0f, 250.0f, -1.0f, 1.0f, proj);
+
+  mat4 model = GLM_MAT4_IDENTITY_INIT;
+  glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
+
+  glm_mat4_mul(proj, model, mvp);
 
   uint32_t shader = create_shader("line");
   glUseProgram(shader);
 
   Formula formula = { 0 };
   ParseTree *tree = malloc(sizeof(ParseTree));
+  tree = NULL;
 
   uint32_t vertex_buffer = 0;
   uint32_t index_buffer = 0;
+
+  uint8_t is_middle_mouse_button_pressed = 0;
+
+  double x = 0;
+  double y = 0;
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     gui_update();
 
+    glfwGetCursorPos(window, &x, &y);
+
+    if (is_mouse_button_pressed) {
+      translate_x -= (mouse_x - x);
+      translate_y += (mouse_y - y);
+    }
+    mouse_x = x;
+    mouse_y = y;
+
+    is_mouse_button_pressed =
+      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE);
+
+    mat4 model = GLM_MAT4_IDENTITY_INIT;
+    glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
+    glm_mat4_mul(proj, model, mvp);
+
     igBegin("Settings", NULL, ImGuiWindowFlags_None);
     igInputText("Formula", formula, FORMULA_MAX_LENGTH, ImGuiWindowFlags_None,
                 NULL, NULL);
 
-    setUniformMat4f(shader, "u_MVP", &proj);
+    setUniformMat4f(shader, "u_MVP", &mvp);
     glUseProgram(shader);
     glBindVertexArray(vertex_array);
 
@@ -89,11 +127,14 @@ int main(void)
       Formula formula_copy;
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
-      update_positions(stride, num_of_positions, positions, indicies, tree);
 #ifdef AUTO_EXPORT_MERMAID
       mermaid_export(tree);
 #endif
     }
+
+    update_positions(stride, num_of_positions, positions, indicies, tree,
+                     translate_x);
+
     igEnd();
 
     gui_render();
