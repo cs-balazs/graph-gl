@@ -213,5 +213,5 @@ void mermaid_export(ParseTree *tree)
   }
   tree_to_mermaid(tree, html);
   strcat(html, "</div></body></html>");
-  write_file("index.html", html);
+  write_file("mermaid.html", html);
 }
