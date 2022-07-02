@@ -3,10 +3,14 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
 
 /**
  * TODOS:
  *   + Remove brackets from formula after calculating the weights (also shift the weights char[])
+ *   - Drag to move in space
+ *   - Scroll to scale
+ *   - Draw a grid (with numbers?)
  *   - Support spaces (remove them like brackets)
  *   - Support "2x" instead of 2*x (also similar transformation to removal)
  *   - free stuff allocated on heap
@@ -154,6 +158,25 @@ ParseTree *parse_formula(Formula formula)
 
 double compute(ParseTree *tree, double x)
 {
+  switch (tree->type) {
+  case CONSTANT:
+    return tree->data.constant;
+  case VARIABLE:
+    return x;
+  case OPERATOR:
+    switch (tree->data.operator) {
+    case PLUS:
+      return compute(tree->left, x) + compute(tree->right, x);
+    case MINUS:
+      return compute(tree->left, x) - compute(tree->right, x);
+    case TIMES:
+      return compute(tree->left, x) * compute(tree->right, x);
+    case DIVISION:
+      return compute(tree->left, x) / compute(tree->right, x);
+    case POWER:
+      return pow(compute(tree->left, x), compute(tree->right, x));
+    }
+  }
 }
 
 void free_parse_tree(ParseTree *tree)

@@ -12,6 +12,23 @@
 
 #define AUTO_EXPORT_MERMAID
 
+void update_positions(float stride, uint16_t num_of_positions, float *positions,
+                      uint32_t *indicies, ParseTree *tree)
+{
+  int16_t x = -250;
+  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
+    positions[i] = x;
+    positions[i + 1] = tree == NULL ? 1 : compute(tree, x);
+    x += stride;
+  }
+  uint16_t index = 0;
+  for (size_t i = 0; i < num_of_positions * 2 - 2; i += 2) {
+    indicies[i] = index;
+    indicies[i + 1] = index + 1;
+    index++;
+  }
+}
+
 int main(void)
 {
   GLFWwindow *window = get_window();
@@ -21,34 +38,28 @@ int main(void)
 
   printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
-  // clang-format off
-  float positions[8] = {
-    -100.0f,  5.0f,
-     100.0f,  5.0f,
-     100.0f, -5.0f,
-    -100.0f, -5.0f,
-  };
+  float stride = 1.0f;
 
-  uint32_t indicies[8] = {
-    0, 1,
-    1, 2,
-    2, 3,
-    3, 0
-  };
-  // clang-format on
+  uint16_t num_of_positions = (uint16_t)(500 / stride);
+
+  float positions[num_of_positions * 2];
+  /* int16_t x = -250;
+  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
+    positions[i] = x;
+    positions[i + 1] = 1;
+    x += stride;
+  } */
+
+  uint32_t indicies[num_of_positions * 2];
+  /* uint16_t index = 0;
+  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
+    indicies[i] = index;
+    indicies[i + 1] = index + 1;
+    index++;
+  } */
+  update_positions(stride, num_of_positions, positions, indicies, NULL);
 
   uint32_t vertex_array = create_vertex_array();
-
-  uint32_t vertex_buffer =
-    create_vertex_buffer(positions, 2 * 4 * sizeof(float));
-
-  BufferLayout layout = { stride: 0, length: 0 };
-  BufferLayoutElement positions_element = { GL_FLOAT, 2, GL_FALSE };
-  buffer_layout_add_element(&layout, &positions_element);
-
-  vertex_array_add_buffer(vertex_array, vertex_buffer, &layout);
-
-  uint32_t index_buffer = create_index_buffer(indicies, 8);
 
   mat4 proj;
   glm_ortho(-250.0f, 250.0f, -250.0f, 250.0f, -1.0f, 1.0f, proj);
@@ -58,6 +69,9 @@ int main(void)
 
   Formula formula = { 0 };
   ParseTree *tree = malloc(sizeof(ParseTree));
+
+  uint32_t vertex_buffer = 0;
+  uint32_t index_buffer = 0;
 
   while (!glfwWindowShouldClose(window)) {
     glClear(GL_COLOR_BUFFER_BIT);
@@ -71,12 +85,25 @@ int main(void)
     setUniformMat4f(shader, "u_MVP", &proj);
     glUseProgram(shader);
     glBindVertexArray(vertex_array);
-    glDrawElements(GL_LINES, 8, GL_UNSIGNED_INT, NULL);
+
+    vertex_buffer =
+      create_vertex_buffer(positions, 2 * num_of_positions * sizeof(float));
+
+    BufferLayout layout = { stride: 0, length: 0 };
+    BufferLayoutElement positions_element = { GL_FLOAT, 2, GL_FALSE };
+    buffer_layout_add_element(&layout, &positions_element);
+
+    vertex_array_add_buffer(vertex_array, vertex_buffer, &layout);
+
+    index_buffer = create_index_buffer(indicies, num_of_positions * 2);
+
+    glDrawElements(GL_LINES, num_of_positions * 2, GL_UNSIGNED_INT, NULL);
 
     if (igButton("Render", (ImVec2){ 100, 25 })) {
       Formula formula_copy;
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
+      update_positions(stride, num_of_positions, positions, indicies, tree);
 #ifdef AUTO_EXPORT_MERMAID
       mermaid_export(tree);
 #endif
