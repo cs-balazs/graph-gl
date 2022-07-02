@@ -207,7 +207,10 @@ void tree_to_mermaid(ParseTree *tree, char *html)
 void mermaid_export(ParseTree *tree)
 {
   char html[5000] =
-    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\" /><title>Parse Tree</title></head><body><script src=\"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js\"></script><div class=\"mermaid\">\ngraph TD\n";
+    "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\" /><title>Parse Tree</title></head><body><script src=\"https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js\"></script><div class=\"mermaid\">\ngraph TD\n  ";
+  if (tree->left == NULL && tree->right == NULL) {
+    mermaid_node(tree, html);
+  }
   tree_to_mermaid(tree, html);
   strcat(html, "</div></body></html>");
   write_file("index.html", html);
