@@ -4,12 +4,14 @@
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
+#include "io.h"
 
 /**
  * TODOS:
  *   + Remove brackets from formula after calculating the weights (also shift the weights char[])
  *   - Drag to move in space
  *   - Scroll to scale
+ *   - Reset frame to origin
  *   - Draw a grid (with numbers?)
  *   - Support spaces (remove them like brackets)
  *   - Support "2x" instead of 2*x (also similar transformation to removal)

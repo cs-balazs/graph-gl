@@ -43,12 +43,12 @@ add_subdirectory(${LIB_DIR}/parse_tree)
 # --------------------
 add_executable(${PROJECT_NAME} src/main.c ${imgui_backends})
 target_link_libraries(${PROJECT_NAME}
-  parse_tree
   OpenGL::GL
   glad
   glfw
   cimgui
   io
+  parse_tree
   gui
   window
   gfx
