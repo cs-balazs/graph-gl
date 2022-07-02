@@ -39,24 +39,10 @@ int main(void)
   printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
   float stride = 1.0f;
-
   uint16_t num_of_positions = (uint16_t)(500 / stride);
-
   float positions[num_of_positions * 2];
-  /* int16_t x = -250;
-  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
-    positions[i] = x;
-    positions[i + 1] = 1;
-    x += stride;
-  } */
-
   uint32_t indicies[num_of_positions * 2];
-  /* uint16_t index = 0;
-  for (size_t i = 0; i < num_of_positions * 2; i += 2) {
-    indicies[i] = index;
-    indicies[i + 1] = index + 1;
-    index++;
-  } */
+
   update_positions(stride, num_of_positions, positions, indicies, NULL);
 
   uint32_t vertex_array = create_vertex_array();
