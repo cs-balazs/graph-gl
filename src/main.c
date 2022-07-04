@@ -97,7 +97,7 @@ int main(void)
     // Update MVP matrix, and set the corresponding uniform
     glm_ortho(-250.0f, 250.0f, -250.0f, 250.0f, -1.0f, 1.0f, proj);
     mat4 model = GLM_MAT4_IDENTITY_INIT;
-    glm_scale(model, (vec3){ scale_value, scale_value, 0.0f });
+    glm_scale(model, (vec3){ scale_value, scale_value, 1.0f });
     glm_mat4_mul(proj, model, mvp);
     setUniformMat4f(shader, "u_MVP", &mvp);
 
@@ -119,6 +119,15 @@ int main(void)
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
       mermaid_export(tree);
+    }
+    igSameLine(0, 10);
+    if (igButton("Reset view", (ImVec2){ 100, 25 })) {
+      translate[0] = .0f;
+      translate[1] = .0f;
+    }
+    igSameLine(0, 10);
+    if (igButton("Reset scale", (ImVec2){ 100, 25 })) {
+      scale_value = 10.0f;
     }
     igEnd();
 
