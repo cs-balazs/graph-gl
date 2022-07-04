@@ -49,8 +49,6 @@ int main(void)
     return -1;
   }
 
-  printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-
   float stride = 0.2f;
   uint32_t num_of_positions = (uint32_t)(500 / stride);
   float positions[num_of_positions * 2];
