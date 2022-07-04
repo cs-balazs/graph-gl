@@ -27,7 +27,7 @@ Simple graphing calculator in OpenGL.
 
 ## Todo list
 
-[ ] Lines start to disappear when dragging the view too far on the x axis. Make sure that the rendered positions are always the ones, showed in the frame
+[x] Lines start to disappear when dragging the view too far on the x axis. Make sure that the rendered positions are always the ones, showed in the frame
 
 > I'm sure there's more
 
