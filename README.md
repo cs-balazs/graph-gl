@@ -10,7 +10,7 @@ Simple graphing calculator in OpenGL.
 [ ] Support plotting multiple grapts so it's more like an actual calculator (add color picking for them as well)  
 [x] Reset translation and scale buttons  
 [ ] Draw a grid (with numbers?)  
-[ ] Adjust projection martix on window resize (have a stashed version, which wouldn't work :/)
+[ ] Adjust projection martix on window resize (have a stashed version, which wouldn't work :/)  
 [ ] Different (and potentially simpler) parser using reverse polish notation?
 
 ### Parser
