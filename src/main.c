@@ -20,7 +20,7 @@ void update_positions(float stride, uint16_t num_of_positions, float *positions,
   for (size_t i = 0; i < num_of_positions * 2; i += 2) {
     positions[i] = x; // * (1.0f / scale_value);
     positions[i + 1] =
-      tree == NULL ? 1 : compute(tree, x - translate_x) + translate_y;
+      tree == NULL ? translate_y : compute(tree, x - translate_x) + translate_y;
     x += stride;
   }
   uint64_t index = 0;
