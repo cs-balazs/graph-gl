@@ -167,6 +167,14 @@ double compute(ParseTree *tree, double x)
 
 void free_parse_tree(ParseTree *tree)
 {
+  if (tree->left != NULL) {
+    free_parse_tree(tree->left);
+  }
+  if (tree->right != NULL) {
+    free_parse_tree(tree->right);
+  }
+  free(tree);
+  return;
 }
 
 void mermaid_node(ParseTree *node, char *html)

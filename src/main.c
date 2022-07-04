@@ -140,12 +140,11 @@ int main(void)
     glfwPollEvents();
   }
 
+  free_parse_tree(tree);
   glDeleteBuffers(1, &vertex_buffer);
   glDeleteBuffers(1, &index_buffer);
   glDeleteProgram(shader);
-
   gui_terminate();
-
   glfwTerminate();
   return 0;
 }

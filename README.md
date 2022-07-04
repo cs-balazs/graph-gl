@@ -6,9 +6,9 @@ Simple graphing calculator in OpenGL.
 
 [x] Remove brackets from formula after calculating the weights (also shift the weights char[])  
 [x] Drag to move in space  
-[~] Scroll to scale (buggy)  
+[x] Scroll to scale (buggy)  
 [ ] Support plotting multiple grapts so it's more like an actual calculator (add color picking for them as well)  
-[ ] Reset translation and scale buttons  
+[x] Reset translation and scale buttons  
 [ ] Draw a grid (with numbers?)  
 [ ] Adjust projection martix on window resize (have a stashed version, which wouldn't work :/)
 [ ] Different (and potentially simpler) parser using reverse polish notation?
@@ -16,7 +16,6 @@ Simple graphing calculator in OpenGL.
 ### Parser
 
 [x] Mermaid export of the tree  
-[ ] free stuff allocated on heap (this only means `ParseTreeNode`, shouldn't be hard to free it recursively)  
 [ ] Support spaces (remove them like brackets)  
 [ ] Support "2x" instead of 2\*x (also similar transformation to removal)  
 [ ] Support negative numbers, currently '-' is being interpreted as minus operator, so (0 - 3) is -3 now  
