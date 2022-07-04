@@ -42,12 +42,16 @@ void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
   scale_value = 20.0f < scale_value ? 20.0f : scale_value;
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
   GLFWwindow *window = get_window();
   if (window == NULL) {
     return -1;
   }
+
+  uint8_t should_export_mermaid =
+    argc > 1 &&
+    (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "--export-on-render") == 0);
 
   float stride = 0.2f;
   uint32_t num_of_positions = (uint32_t)(500 / stride);
@@ -116,7 +120,9 @@ int main(void)
       Formula formula_copy;
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
-      mermaid_export(tree);
+      if (should_export_mermaid) {
+        mermaid_export(tree);
+      }
     }
     igSameLine(0, 10);
     if (igButton("Reset view", (ImVec2){ 100, 25 })) {
