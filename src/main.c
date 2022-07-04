@@ -113,6 +113,7 @@ int main(void)
     igBegin("Settings", NULL, ImGuiWindowFlags_None);
     igInputText("Formula", formula, FORMULA_MAX_LENGTH, ImGuiWindowFlags_None,
                 NULL, NULL);
+    igSliderFloat("Stride", &stride, .15f, 5.0f, "%f", ImGuiActivateFlags_None);
     if (igButton("Render", (ImVec2){ 100, 25 })) {
       Formula formula_copy;
       strcpy(formula_copy, formula);
