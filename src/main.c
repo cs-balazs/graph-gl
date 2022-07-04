@@ -10,22 +10,20 @@
 #include "gfx.h"
 #include "parse_tree.h"
 
-#define AUTO_EXPORT_MERMAID
-
-// TODO some code could be simplified with structs
-
-double scale_value = 1;
+float scale_value = 10.0f;
 
 void update_positions(float stride, uint16_t num_of_positions, float *positions,
-                      uint32_t *indicies, ParseTree *tree, double translate_x)
+                      uint32_t *indicies, ParseTree *tree, float translate_x,
+                      float translate_y)
 {
-  int16_t x = -250 - translate_x;
+  float x = -250.0f;
   for (size_t i = 0; i < num_of_positions * 2; i += 2) {
-    positions[i] = (double)x * scale_value;
-    positions[i + 1] = tree == NULL ? 1 : compute(tree, x);
+    positions[i] = x; // * (1.0f / scale_value);
+    positions[i + 1] =
+      tree == NULL ? 1 : compute(tree, x - translate_x) + translate_y;
     x += stride;
   }
-  uint16_t index = 0;
+  uint64_t index = 0;
   for (size_t i = 0; i < num_of_positions * 2 - 2; i += 2) {
     indicies[i] = index;
     indicies[i + 1] = index + 1;
@@ -35,13 +33,13 @@ void update_positions(float stride, uint16_t num_of_positions, float *positions,
 
 void scroll_callback(GLFWwindow *window, double x_offset, double y_offset)
 {
-  // printf("(%lf, %lf)\n", x_offset, y_offset);
   if (y_offset > 0) {
-    scale_value += 0.1f;
+    scale_value += 0.5f;
   } else {
-    scale_value -= 0.1f;
+    scale_value -= 0.5f;
   }
-  scale_value = 1 > scale_value ? 1 : scale_value;
+  scale_value = 1.0f > scale_value ? 1.0f : scale_value;
+  scale_value = 20.0f < scale_value ? 20.0f : scale_value;
 }
 
 int main(void)
@@ -53,33 +51,20 @@ int main(void)
 
   printf("OpenGL version: %s\n", glGetString(GL_VERSION));
 
-  float stride = 1.0f;
-  uint16_t num_of_positions = (uint16_t)(500 / stride);
+  float stride = 0.2f;
+  uint32_t num_of_positions = (uint32_t)(500 / stride);
   float positions[num_of_positions * 2];
   uint32_t indicies[num_of_positions * 2];
 
-  double mouse_x = 0;
-  double mouse_y = 0;
-  double translate_x = 0;
-  double translate_y = 0;
+  vec2 cursor_pos = { 0, 0 };
+  vec2 translate = { 0, 0 };
+
   uint8_t is_mouse_button_pressed = 0;
 
   update_positions(stride, num_of_positions, positions, indicies, NULL,
-                   translate_x);
+                   translate[0], translate[1]);
 
   uint32_t vertex_array = create_vertex_array();
-
-  mat4 mvp;
-
-  mat4 proj;
-  glm_ortho(-250.0f, 250.0f, -250.0f, 250.0f, -1.0f, 1.0f, proj);
-
-  mat4 model = GLM_MAT4_IDENTITY_INIT;
-  glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
-
-  glm_scale(model, (vec3){ scale_value, scale_value, scale_value });
-
-  glm_mat4_mul(proj, model, mvp);
 
   uint32_t shader = create_shader("line");
   glUseProgram(shader);
@@ -106,18 +91,20 @@ int main(void)
     glfwGetCursorPos(window, &x, &y);
 
     if (is_mouse_button_pressed) {
-      translate_x -= (mouse_x - x);
-      translate_y += (mouse_y - y);
+      translate[0] -= ((cursor_pos[0] - x) / scale_value);
+      translate[1] += ((cursor_pos[1] - y) / scale_value);
     }
-    mouse_x = x;
-    mouse_y = y;
+    cursor_pos[0] = x;
+    cursor_pos[1] = y;
 
     is_mouse_button_pressed =
       glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE);
 
+    mat4 mvp;
+    mat4 proj;
+    glm_ortho(-250.0f, 250.0f, -250.0f, 250.0f, -1.0f, 1.0f, proj);
     mat4 model = GLM_MAT4_IDENTITY_INIT;
-    glm_translate(model, (vec3){ translate_x, translate_y, 0.0f });
-    glm_scale(model, (vec3){ scale_value, scale_value, scale_value });
+    glm_scale(model, (vec3){ scale_value, scale_value, 0.0f });
     glm_mat4_mul(proj, model, mvp);
 
     igBegin("Settings", NULL, ImGuiWindowFlags_None);
@@ -145,13 +132,21 @@ int main(void)
       Formula formula_copy;
       strcpy(formula_copy, formula);
       tree = parse_formula(formula_copy);
-#ifdef AUTO_EXPORT_MERMAID
       mermaid_export(tree);
-#endif
     }
 
     update_positions(stride, num_of_positions, positions, indicies, tree,
-                     translate_x);
+                     translate[0], translate[1]);
+
+    printf("( ( %lf, %lf ), ( %lf, %lf ) )\n", positions[0], positions[1],
+           positions[num_of_positions * 2 - 2],
+           positions[num_of_positions * 2 - 1]);
+
+    printf("[ [ %d, %d ], [ %d, %d ] ]\n", indicies[0], indicies[1],
+           indicies[num_of_positions * 2 - 2],
+           indicies[num_of_positions * 2 - 1]);
+
+    printf("Frame left: %lf\n", -250.0f - translate[0]);
 
     igEnd();
 
